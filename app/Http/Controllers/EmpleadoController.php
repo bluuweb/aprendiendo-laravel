@@ -14,7 +14,11 @@ class EmpleadoController extends Controller
      */
     public function index()
     {
-        //
+        // $datos['empleados']= Empleado::paginate(5);
+
+        $empleados = Empleado::paginate(5);
+
+        return view('empleado.index', compact('empleados'));
     }
 
     /**
@@ -24,7 +28,7 @@ class EmpleadoController extends Controller
      */
     public function create()
     {
-        //
+        return view('empleado.create');
     }
 
     /**
@@ -35,7 +39,28 @@ class EmpleadoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $newEmpleado = new Empleado();
+        $newEmpleado->nombre = $request->nombre;
+        $newEmpleado->apellido_paterno = $request->apellido_paterno;
+        $newEmpleado->apellido_materno = $request->apellido_materno;
+        $newEmpleado->correo = $request->correo;
+        
+        if($request->hasFile('foto')){
+            $newEmpleado->foto = $request->file('foto')->store('uploads', 'public');
+        }
+        
+
+        $newEmpleado->save();
+
+        return $newEmpleado;
+        
+        // obligas a que el orden de lo inputs (name) sea igual a la base de datos
+        // $datosEmpleado = request()->except('_token');
+        // Empleado::insert($datosEmpleado);
+        // return $request;
+
+
     }
 
     /**
