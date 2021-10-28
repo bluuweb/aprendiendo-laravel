@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empleado;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class EmpleadoController extends Controller
 {
@@ -16,7 +17,8 @@ class EmpleadoController extends Controller
     {
         // $datos['empleados']= Empleado::paginate(5);
 
-        $empleados = Empleado::paginate(5);
+        Paginator::useBootstrap();
+        $empleados = Empleado::paginate(1);
 
         return view('empleado.index', compact('empleados'));
     }
@@ -39,6 +41,21 @@ class EmpleadoController extends Controller
      */
     public function store(Request $request)
     {
+
+        $request->validate([
+            'nombre' => 'required|string',
+            'apellido_paterno' => 'required|string',
+            'apellido_materno' => 'required|string',
+            'correo' => 'required|email|unique:empleados,correo',
+            'foto' => 'required|image'
+        ]);
+
+        // $messages = [
+        //     'nombre' => 'El :attribute es requerido',
+        //     'size' => 'The :attribute must be exactly :size.',
+        //     'between' => 'The :attribute value :input is not between :min - :max.',
+        //     'in' => 'The :attribute must be one of the following types: :values',
+        // ];
         
         $newEmpleado = new Empleado();
         $newEmpleado->nombre = $request->nombre;
@@ -53,7 +70,7 @@ class EmpleadoController extends Controller
 
         $newEmpleado->save();
 
-        return $newEmpleado;
+        return redirect()->route('empleado.index')->with('message', 'Registro exitoso');
         
         // obligas a que el orden de lo inputs (name) sea igual a la base de datos
         // $datosEmpleado = request()->except('_token');
@@ -82,7 +99,7 @@ class EmpleadoController extends Controller
      */
     public function edit(Empleado $empleado)
     {
-        //
+        return view('empleado.edit', compact('empleado'));
     }
 
     /**
@@ -94,7 +111,30 @@ class EmpleadoController extends Controller
      */
     public function update(Request $request, Empleado $empleado)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string',
+            'apellido_paterno' => 'required|string',
+            'apellido_materno' => 'required|string',
+            'correo' => 'required|email|unique:empleados,correo,'.$empleado->id.',id'
+        ]);
+
+        // return $empleado;
+
+        if ($request->foto) {
+            unlink(storage_path('app/public/'.$empleado->foto));
+            $empleado->foto = $request->file('foto')->store('uploads', 'public');
+        }
+
+        // $empleado = new Empleado();
+        $empleado->nombre = $request->nombre;
+        $empleado->apellido_paterno = $request->apellido_paterno;
+        $empleado->apellido_materno = $request->apellido_materno;
+        $empleado->correo = $request->correo;
+
+        $empleado->update();
+
+        return redirect()->route('empleado.index')->with('message', 'Actualización exitosa!');
+
     }
 
     /**
@@ -105,6 +145,8 @@ class EmpleadoController extends Controller
      */
     public function destroy(Empleado $empleado)
     {
-        //
+        $empleado->delete();
+        //retornamos a la vista anterior y mandamos un mensaje
+        return  back()->with('message', 'Registro eliminado con exito');
     }
 }

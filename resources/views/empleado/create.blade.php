@@ -15,11 +15,53 @@
       placeholder="Nombre"
       type="text"
       class="form-control mb-2"
+      {{-- eso hace que si envias el formulario con unos campos vacios y la validacion falla no se perdera lo que habias escrito antes --}}
+      value="{{ old('nombre') }}"
     >
-    <input type="text" name="apellido_paterno" placeholder="A Paterno" class="form-control mb-2">
-    <input type="text" name="apellido_materno" placeholder="A Materno" class="form-control mb-2">
-    <input type="email" name="correo" placeholder="Correo" class="form-control mb-2">
-    <input type="file" name="foto" class="form-control mb-2">
+    @error('nombre')
+        <p class="text-danger">{{ $message }}</p>
+    @enderror
+    
+    <input
+      class="form-control mb-2"
+      name="apellido_paterno"
+      placeholder="A Paterno"
+      type="text"
+      value="{{ old('apellido_paterno') }}"
+    >
+    @error('apellido_paterno')
+        <p class="text-danger">{{ $message }}</p>
+    @enderror
+    
+    <input
+      class="form-control mb-2"
+      name="apellido_materno"
+      placeholder="A Materno"
+      type="text"
+      value="{{ old('apellido_materno') }}"
+    >
+    @error('apellido_materno')
+        <p class="text-danger">{{ $message }}</p>
+    @enderror
+   
+    <input
+      class="form-control mb-2"
+      name="correo"
+      placeholder="Correo"
+      type="email"
+      value="{{ old('correo') }}"
+    >
+    @error('correo')
+        <p class="text-danger">{{ $message }}</p>
+    @enderror
+    <input
+      class="form-control mb-2"
+      name="foto"
+      type="file"
+    >
+    @error('foto')
+        <p class="text-danger">{{ $message }}</p>
+    @enderror
     <button type="submit" class="btn btn-primary">Agregar</button>
 </form>
 
